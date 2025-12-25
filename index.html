@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>Visionary AI - স্মার্ট ছবি বিশ্লেষক</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen flex items-center justify-center">
+    <div class="max-w-2xl w-full p-8 bg-gray-800 rounded-2xl shadow-2xl border border-gray-700">
+        <h1 class="text-3xl font-bold text-center text-blue-400 mb-6">Visionary AI 👁️</h1>
+        
+        <div class="space-y-4">
+            <input type="file" id="imageInput" class="w-full p-3 bg-gray-700 rounded-lg outline-none border border-gray-600 focus:border-blue-500">
+            <input type="text" id="queryInput" placeholder="ছবি নিয়ে কিছু জিজ্ঞাসা করুন..." class="w-full p-3 bg-gray-700 rounded-lg outline-none border border-gray-600 focus:border-blue-500 text-white">
+            <button onclick="uploadImage()" id="btn" class="w-full bg-blue-600 hover:bg-blue-700 p-4 rounded-xl font-bold transition-all">বিশ্লেষণ শুরু করুন</button>
+        </div>
+
+        <div id="result" class="mt-8 hidden p-6 bg-gray-700 rounded-xl border-l-4 border-blue-500">
+            <p id="desc" class="text-lg leading-relaxed mb-4"></p>
+            <audio id="audioPlayer" controls class="w-full"></audio>
+        </div>
+    </div>
+
+    <script>
+        async function uploadImage() {
+            const file = document.getElementById('imageInput').files[0];
+            const query = document.getElementById('queryInput').value;
+            if(!file) return alert("ছবি সিলেক্ট করুন!");
+
+            document.getElementById('btn').innerText = "বিশ্লেষণ চলছে...";
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('query', query);
+
+            const res = await fetch('/analyze', { method: 'POST', body: formData });
+            const data = await res.json();
+
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('desc').innerText = data.description;
+            document.getElementById('audioPlayer').src = data.audio_url + "?t=" + new Date().getTime();
+            document.getElementById('btn').innerText = "বিশ্লেষণ শুরু করুন";
+        }
+    </script>
+</body>
+</html>
